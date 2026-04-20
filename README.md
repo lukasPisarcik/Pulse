@@ -1,95 +1,76 @@
-# Pulse
-
 <p align="center">
-  <b>Your macOS notch wellness companion</b><br/>
-  Minimal, ambient, and always watching your focus flow.
+  <img src="./pulse-logo.svg" alt="Pulse logo" width="760"/>
 </p>
 
 <p align="center">
-  <img alt="Platform" src="https://img.shields.io/badge/platform-macOS-111827?style=for-the-badge&logo=apple&logoColor=white">
-  <img alt="SwiftUI" src="https://img.shields.io/badge/built%20with-SwiftUI-0ea5e9?style=for-the-badge&logo=swift&logoColor=white">
-  <img alt="Status" src="https://img.shields.io/badge/status-v1%20in%20progress-1D9E75?style=for-the-badge">
-  <img alt="Category" src="https://img.shields.io/badge/category-healthcare%20%26%20fitness-EF9F27?style=for-the-badge">
+  <strong>Your macOS notch wellness companion</strong><br/>
+  Gentle focus guidance, ambient visuals, and a tiny owl named Pip.
+</p>
+
+<p align="center">
+  <img alt="macOS" src="https://img.shields.io/badge/macOS-14%2B-111827?style=flat-square&logo=apple&logoColor=white"/>
+  <img alt="SwiftUI" src="https://img.shields.io/badge/SwiftUI-AppKit-0EA5E9?style=flat-square&logo=swift&logoColor=white"/>
+  <img alt="Status" src="https://img.shields.io/badge/status-v1%20active-1D9E75?style=flat-square"/>
+  <img alt="Category" src="https://img.shields.io/badge/category-health%20%26%20fitness-EF9F27?style=flat-square"/>
 </p>
 
 ---
 
-## Why Pulse?
+## Overview
 
-Pulse lives in the notch and gently nudges healthier work rhythms: eye rest, movement, hydration, and wind-down timing.
-At the center is **Pip**, a minimalist owl mascot that reacts to your wellness state in real-time.
+**Pulse** sits exactly where your eyes already are: the MacBook notch area.
+Instead of disruptive reminders, it gives subtle, state-based wellness feedback about your current focus rhythm.
 
-- Flow-first ambient UI: useful without being distracting
-- State-driven notch visuals with glow and breathing motion
-- Friendly wellness prompts that never guilt-trip
-- Background agent app (`LSUIElement = YES`) with no Dock icon
-
----
-
-## Core Experience
-
-### Notch wellness states
-
-- `Flow` (green): under 90 minutes since break
-- `Heads-up` (amber): 90-150 minutes since break
-- `Rest now` (red): 150+ minutes since break
-
-Each state updates:
-
-- Pip expression and animation
-- Notch glow color and pulse speed
-- Label and mini wellness bar
-- Notification tone and urgency
-
-### Pip mascot states
-
-| State | Visuals | Message style |
-|---|---|---|
-| Flow | Open eyes, relaxed tufts/wings | "I'll keep watch." |
-| Heads-up | Amber squint pulse, raised tufts | Gentle check-in |
-| Rest now | Half-closed eyes, head nod | Stronger nudge to step away |
-| Break taken | Bright eyes, wave animation | Positive reinforcement |
+- **Pip-led UX**: a geometric owl avatar with expressive state animations
+- **Notch-native UI**: idle, hover, and expanded layouts designed for ambient readability
+- **Behavior-aware**: reacts to time-since-break, idle periods, and calendar meetings
+- **Background agent**: runs as `LSUIElement = YES` with no Dock icon
 
 ---
 
-## Features (v1)
+## Key Features
 
-- Notch window (idle, hover, expanded layouts)
-- `WellnessEngine` score + state machine
-- `FocusTracker` activity + idle detection
-- `BreakScheduler` for timed interventions
-- `CalendarBridge` meeting-aware pause behavior
-- `UNUserNotificationCenter` fallback notifications
-- Native macOS settings with Liquid Glass style
-- SwiftData persistence for breaks and sessions
-- Launch at login via `SMAppService`
+### Notch states
+
+- **Flow** (`< 90m`) - green pulse, calm expression
+- **Heads-up** (`90-150m`) - amber pulse, light urgency
+- **Rest now** (`150m+`) - red pulse, stronger break nudge
+
+### Pip character system
+
+- Emotion changes via eyes, eyelids, tufts, wings, and motion timing
+- Tiny notch variant (`PipMiniView`) for 20x22 rendering
+- Avatar variant (`PipAvatarView`) for notifications
+- Warm, short, non-judgmental copy templates
+
+### Wellness engine
+
+- `WellnessEngine` computes score and transitions state
+- `FocusTracker` observes app activity + idle threshold
+- `BreakScheduler` handles intervals and snooze
+- `CalendarBridge` pauses break prompts during meetings
+
+### Native macOS settings
+
+- `NavigationSplitView` + sidebar pages
+- General, Schedule, Breaks, Notch, Pip, Privacy
+- SwiftData persistence for breaks and session metrics
 
 ---
 
-## Tech Stack
-
-- Swift + SwiftUI
-- AppKit (`NSWindow`, notch positioning)
-- EventKit (meeting detection)
-- UserNotifications
-- SwiftData
-- XcodeGen
-
----
-
-## Project Structure
+## Architecture
 
 ```text
 Pulse/
-├── App/            # app entry and lifecycle
-├── Notch/          # notch window, states, glow
-├── Pip/            # owl views, animator, variants
-├── Engine/         # wellness logic + schedulers
-├── Settings/       # settings window + pages
-├── Notifications/  # notification manager + templates
+├── App/            # App entry point + lifecycle
+├── Notch/          # Notch NSWindow and visual states
+├── Pip/            # Mascot rendering and animator
+├── Engine/         # Wellness logic and schedulers
+├── Settings/       # Settings window and pages
+├── Notifications/  # Notification manager and templates
 ├── Models/         # SwiftData models
-├── Support/        # palette/utilities
-└── Resources/      # assets, plist, icons
+├── Support/        # Shared color and helper extensions
+└── Resources/      # Assets + Info.plist
 ```
 
 ---
@@ -102,44 +83,47 @@ xcodegen generate
 open Pulse.xcodeproj
 ```
 
-Then run with `Cmd + R`.
+Run with `Cmd + R`.
 
-> Pulse works best on notched MacBooks. On non-notched displays, it falls back to a top-center floating pill.
-
----
-
-## Design System
-
-- Primary green: `#1D9E75`
-- Heads-up amber: `#EF9F27`
-- Rest red: `#E24B4A`
-- Interactive blue: `#378ADD`
-- Expanded purple: `#7F77DD`
-- Dark base: `#0d1219`
-- Navy body: `#1a2535`
-
-Pip icon/brand language:
-- Geometric owl construction (ellipses, circles, triangles)
-- High-contrast glowing eyes for notch readability
-- Dark variant as primary app icon
+> On non-notched displays, Pulse automatically uses a floating top-center pill UI.
 
 ---
 
-## Roadmap
+## Brand Palette
 
-### v1 (current)
-- Complete notch wellness experience
-- Pip state animations and templated copy
-- Scheduling + settings + persistence
-
-### v2 (planned, not implemented)
-- Optional local LLM via Ollama (`llama3.2:1b` or `phi3:mini`)
-- Personalized Pip responses with silent fallback to templates
-- More context-aware suggestions
+| Token | Hex | Purpose |
+|---|---|---|
+| `pulseGreen` | `#1D9E75` | flow / primary |
+| `pulseAmber` | `#EF9F27` | heads-up |
+| `pulseRed` | `#E24B4A` | rest-now |
+| `pulseBlue` | `#378ADD` | interactive controls |
+| `pulsePurple` | `#7F77DD` | expanded/open state |
+| `pulseDark` | `#0d1219` | dark backgrounds |
+| `pulseNavy` | `#1a2535` | Pip body layers |
 
 ---
 
-## Notes
+## v1 Scope
 
-- `Resources/Assets.xcassets/AppIcon.appiconset` currently uses placeholder assets unless replaced.
-- This project is intended for direct download distribution (not App Store) in v1.
+- Notch overlay window with glow layers
+- Pip mini + hover + expanded views
+- Wellness scoring and break scheduling
+- Notification fallback via `UNUserNotificationCenter`
+- Meeting-aware suppression via EventKit
+- Launch-at-login support via `SMAppService`
+- SwiftData records for breaks and sessions
+
+---
+
+## Planned (v2+)
+
+- Optional local LLM messages via Ollama (`llama3.2:1b` / `phi3:mini`)
+- Deeper personalization from historical patterns
+- Additional wellness insights and weekly rhythm summaries
+
+---
+
+## Development Notes
+
+- Current app icon set contains placeholder entries until final exports are added.
+- v1 target distribution is direct download (outside App Store).
