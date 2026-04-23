@@ -1,15 +1,20 @@
 import Foundation
 import EventKit
 
-@MainActor
 final class CalendarBridge {
     private let store = EKEventStore()
+    private let eventsQueue = DispatchQueue(label: "pulse.calendar.events", qos: .userInitiated)
     private(set) var hasAccess: Bool = false
 
-    func requestAccess() async {
+    init() {
+        refreshAuthorizationCache()
+    }
+
+    @discardableResult
+    func requestAccess() async -> Bool {
         if #available(macOS 14.0, *) {
             do {
-                hasAccess = try await store.requestFullAccessToEvents()
+                _ = try await store.requestFullAccessToEvents()
             } catch {
                 hasAccess = false
             }
@@ -20,18 +25,45 @@ final class CalendarBridge {
                 }
             }
         }
+        refreshAuthorizationCache()
+        return hasAccess
     }
 
-    func isInMeeting(now: Date = Date()) -> Bool {
+    var authorizationStatus: EKAuthorizationStatus {
+        EKEventStore.authorizationStatus(for: .event)
+    }
+
+    var isAuthorized: Bool {
+        switch authorizationStatus {
+        case .fullAccess, .authorized:
+            return true
+        default:
+            return false
+        }
+    }
+
+    func refreshAuthorizationCache() {
+        hasAccess = isAuthorized
+    }
+
+    /// EventKit fetches can occasionally block for several seconds (large
+    /// calendars, account sync churn). Run this off the main thread so
+    /// hover/click handling in the notch stays responsive.
+    func isInMeeting(now: Date = Date()) async -> Bool {
         guard hasAccess else { return false }
-        let predicate = store.predicateForEvents(
-            withStart: now.addingTimeInterval(-60),
-            end: now.addingTimeInterval(60),
-            calendars: nil
-        )
-        return store.events(matching: predicate).contains { event in
-            guard !event.isAllDay else { return false }
-            return event.startDate <= now && event.endDate >= now
+        return await withCheckedContinuation { cont in
+            eventsQueue.async { [store] in
+                let predicate = store.predicateForEvents(
+                    withStart: now.addingTimeInterval(-60),
+                    end: now.addingTimeInterval(60),
+                    calendars: nil
+                )
+                let inMeeting = store.events(matching: predicate).contains { event in
+                    guard !event.isAllDay else { return false }
+                    return event.startDate <= now && event.endDate >= now
+                }
+                cont.resume(returning: inMeeting)
+            }
         }
     }
 }

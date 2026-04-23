@@ -3,40 +3,21 @@ import SwiftUI
 struct ScheduleSettingsView: View {
     @EnvironmentObject private var store: SettingsStore
 
-    private let weekdayLabels = ["S", "M", "T", "W", "T", "F", "S"]
+    private let weekdayOrder = [1, 2, 3, 4, 5, 6, 0] // Mon...Sun
+    private let weekdayLabels = ["M", "T", "W", "T", "F", "S", "S"]
 
     var body: some View {
         Form {
             Section("Working hours") {
-                HStack {
-                    Text("Start")
-                    Spacer()
-                    Picker("", selection: $store.workingHoursStart) {
-                        ForEach(0..<24) { h in
-                            Text(hourLabel(h)).tag(h)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 120)
-                }
-                HStack {
-                    Text("End")
-                    Spacer()
-                    Picker("", selection: $store.workingHoursEnd) {
-                        ForEach(1..<25) { h in
-                            Text(hourLabel(h == 24 ? 0 : h)).tag(h)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: 120)
-                }
+                DatePicker("Start", selection: startDateBinding, displayedComponents: .hourAndMinute)
+                DatePicker("End", selection: endDateBinding, displayedComponents: .hourAndMinute)
             }
 
             Section("Active days") {
                 HStack(spacing: 8) {
-                    ForEach(0..<7) { day in
+                    ForEach(Array(weekdayOrder.enumerated()), id: \.offset) { index, day in
                         DayToggle(
-                            label: weekdayLabels[day],
+                            label: weekdayLabels[index],
                             isOn: store.dayEnabled(day),
                             action: { store.toggleDay(day) }
                         )
@@ -45,30 +26,76 @@ struct ScheduleSettingsView: View {
                 .padding(.vertical, 4)
             }
 
-            Section("Wind-down") {
-                Toggle("Enable wind-down reminders", isOn: $store.windDownEnabled)
-                HStack {
-                    Text("Start at")
-                    Spacer()
-                    Picker("", selection: $store.windDownStartHour) {
-                        ForEach(17..<24) { h in
-                            Text(hourLabel(h)).tag(h)
-                        }
+            Section("Focus protections") {
+                Toggle("Pause during meetings", isOn: $store.pauseDuringMeetings)
+                Toggle("Pause when idle", isOn: $store.pauseWhenIdle)
+                if store.pauseWhenIdle {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Idle threshold: \(store.idleThresholdMinutes) min")
+                            .foregroundStyle(.secondary)
+                        Slider(
+                            value: Binding(
+                                get: { Double(store.idleThresholdMinutes) },
+                                set: { store.idleThresholdMinutes = Int($0) }
+                            ),
+                            in: 3...10,
+                            step: 1
+                        )
                     }
-                    .labelsHidden()
-                    .frame(width: 120)
-                    .disabled(!store.windDownEnabled)
                 }
+            }
+
+            Section("Wind-down") {
+                Toggle("Enable evening wind-down", isOn: $store.windDownEnabled)
+                DatePicker("Start time", selection: windDownDateBinding, displayedComponents: .hourAndMinute)
+                    .disabled(!store.windDownEnabled)
+                Toggle("Weekend mode", isOn: $store.weekendMode)
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Schedule")
     }
 
-    private func hourLabel(_ h: Int) -> String {
-        let suffix = h < 12 ? "AM" : "PM"
-        let hour12 = h == 0 ? 12 : (h > 12 ? h - 12 : h)
-        return "\(hour12):00 \(suffix)"
+    private var startDateBinding: Binding<Date> {
+        Binding(
+            get: { date(hour: store.workingHoursStart, minute: store.workStartMinute) },
+            set: { date in
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+                store.workingHoursStart = comps.hour ?? store.workingHoursStart
+                store.workStartMinute = comps.minute ?? store.workStartMinute
+            }
+        )
+    }
+
+    private var endDateBinding: Binding<Date> {
+        Binding(
+            get: { date(hour: store.workingHoursEnd, minute: store.workEndMinute) },
+            set: { date in
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+                store.workingHoursEnd = comps.hour ?? store.workingHoursEnd
+                store.workEndMinute = comps.minute ?? store.workEndMinute
+            }
+        )
+    }
+
+    private var windDownDateBinding: Binding<Date> {
+        Binding(
+            get: { date(hour: store.windDownStartHour, minute: store.windDownMinute) },
+            set: { date in
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
+                store.windDownStartHour = comps.hour ?? store.windDownStartHour
+                store.windDownMinute = comps.minute ?? store.windDownMinute
+            }
+        )
+    }
+
+    private func date(hour: Int, minute: Int) -> Date {
+        let now = Date()
+        return Calendar.current.date(
+            bySettingHour: hour,
+            minute: minute,
+            second: 0,
+            of: now
+        ) ?? now
     }
 }
 

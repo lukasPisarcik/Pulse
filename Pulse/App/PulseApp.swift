@@ -5,21 +5,12 @@ import SwiftData
 struct PulseApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
+    // Placeholder scene required by `App`. The Settings window is managed
+    // directly in AppKit (see `AppDelegate.openSettings`) because the SwiftUI
+    // `Settings { }` scene's `showSettingsWindow:` selector prints a
+    // "Please use SettingsLink" runtime warning and doesn't reliably open
+    // for `.accessory` apps on macOS 14+.
     var body: some Scene {
-        Settings {
-            SettingsView()
-                .environmentObject(appDelegate.store)
-                .environmentObject(appDelegate.engine)
-        }
-        .modelContainer(for: [BreakRecord.self, SessionRecord.self]) { result in
-            switch result {
-            case .success(let container):
-                Task { @MainActor in
-                    appDelegate.scheduler.modelContext = container.mainContext
-                }
-            case .failure:
-                break
-            }
-        }
+        Settings { EmptyView() }
     }
 }

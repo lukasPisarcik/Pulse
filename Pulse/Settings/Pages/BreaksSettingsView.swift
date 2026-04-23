@@ -6,27 +6,40 @@ struct BreaksSettingsView: View {
     var body: some View {
         Form {
             Section("Break intervals") {
+                Toggle("Eye rest reminders", isOn: $store.eyeRestEnabled)
                 breakSlider(
                     label: "Eye rest",
                     icon: "eye",
                     value: $store.eyeRestIntervalMinutes,
-                    range: 10...60
+                    range: 15...90
                 )
+                .disabled(!store.eyeRestEnabled)
+                .opacity(store.eyeRestEnabled ? 1 : 0.5)
+
+                Toggle("Movement reminders", isOn: $store.movementEnabled)
                 breakSlider(
                     label: "Movement",
                     icon: "figure.walk",
                     value: $store.movementIntervalMinutes,
-                    range: 30...180
+                    range: 30...120
                 )
+                .disabled(!store.movementEnabled)
+                .opacity(store.movementEnabled ? 1 : 0.5)
+
+                Toggle("Hydration reminders", isOn: $store.hydrationEnabled)
                 breakSlider(
                     label: "Hydration",
                     icon: "drop",
                     value: $store.hydrationIntervalMinutes,
-                    range: 20...180
+                    range: 30...90
                 )
+                .disabled(!store.hydrationEnabled)
+                .opacity(store.hydrationEnabled ? 1 : 0.5)
             }
 
-            Section("Snooze") {
+            Section("Behavior") {
+                Toggle("Never interrupt flow", isOn: $store.neverInterruptFlow)
+
                 HStack {
                     Text("Snooze duration")
                     Spacer()
@@ -41,7 +54,6 @@ struct BreaksSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Breaks")
     }
 
     private func breakSlider(

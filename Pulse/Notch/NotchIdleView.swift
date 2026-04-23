@@ -1,68 +1,7 @@
 import SwiftUI
 
-struct NotchIdleView: View {
-    @ObservedObject var engine: WellnessEngine
-    @ObservedObject var store: SettingsStore
-
-    var body: some View {
-        HStack(spacing: 0) {
-            if store.showStreak {
-                Text("\(engine.focusStreakMinutes)m focus")
-                    .font(.system(size: 9, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color.white.opacity(0.6))
-                    .frame(width: 64, alignment: .trailing)
-                    .padding(.trailing, 8)
-            } else {
-                Spacer().frame(width: 72)
-            }
-
-            notchPill
-                .frame(width: 130, height: 32)
-
-            if store.showClock {
-                Text(currentTime)
-                    .font(.system(size: 9, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color.white.opacity(0.6))
-                    .frame(width: 64, alignment: .leading)
-                    .padding(.leading, 8)
-            } else {
-                Spacer().frame(width: 72)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var notchPill: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.black.opacity(0.92))
-
-            HStack(spacing: 6) {
-                if store.showPipInNotch {
-                    PipMiniView(state: engine.pipState, width: 18, height: 20)
-                }
-
-                BreathingDot(color: engine.state.color, duration: engine.state.pulseDuration)
-                    .frame(width: 7, height: 7)
-
-                Text(engine.state.label)
-                    .font(.system(size: 9, weight: .semibold, design: .rounded))
-                    .foregroundStyle(engine.state.color)
-
-                MiniWellnessBar(score: engine.wellnessScore, color: engine.state.color)
-                    .frame(width: 36, height: 2)
-            }
-            .padding(.horizontal, 10)
-        }
-    }
-
-    private var currentTime: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm"
-        return formatter.string(from: Date())
-    }
-}
-
+/// Breathing indicator dot — solid circle whose scale pulses between 0.88 and 1.15
+/// at the given duration. Used in the pill's wing alongside Pip.
 struct BreathingDot: View {
     let color: Color
     let duration: Double
@@ -80,6 +19,8 @@ struct BreathingDot: View {
     }
 }
 
+/// Tiny 0–100 wellness fill bar — used inside the pill on non-notched Macs to
+/// mirror the mockup's in-notch progress indicator.
 struct MiniWellnessBar: View {
     let score: Int
     let color: Color

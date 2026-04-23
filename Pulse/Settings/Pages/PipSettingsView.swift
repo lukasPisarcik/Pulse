@@ -42,7 +42,6 @@ struct PipSettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Pip")
     }
 
     private func stateLabel(_ s: PipState) -> String {

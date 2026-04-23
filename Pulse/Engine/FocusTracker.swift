@@ -32,4 +32,8 @@ final class FocusTracker {
     var idleSeconds: TimeInterval {
         CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .mouseMoved)
     }
+
+    func setIdleThreshold(minutes: Int) {
+        idleThresholdSeconds = TimeInterval(max(1, minutes) * 60)
+    }
 }

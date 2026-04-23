@@ -5,12 +5,17 @@ import UserNotifications
 final class NotificationManager {
     private let center = UNUserNotificationCenter.current()
 
-    func requestAuthorization() async {
+    @discardableResult
+    func requestAuthorization() async -> Bool {
         do {
-            _ = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
         } catch {
-            // silent — user can re-enable in System Settings
+            return false
         }
+    }
+
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        await center.notificationSettings().authorizationStatus
     }
 
     func deliver(kind: BreakKind, message: String) {

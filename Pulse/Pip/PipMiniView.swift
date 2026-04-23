@@ -12,7 +12,6 @@ struct PipMiniView: View {
             RoundedRectangle(cornerRadius: height / 2.4)
                 .fill(Color.pulseNavy)
                 .frame(width: width, height: height * 0.82)
-                .offset(y: 2)
 
             HStack(spacing: width * 0.18) {
                 eyeDot()

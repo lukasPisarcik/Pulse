@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notch Wellness Coach — UI Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f7;
+    --surface: #ffffff;
+    --surface2: #f0eef5;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --text: #1a1a1f;
+    --text2: #6b6878;
+    --text3: #a09db0;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --green: #1D9E75;
+    --amber: #EF9F27;
+    --red: #E24B4A;
+    --purple: #7F77DD;
+    --blue: #378ADD;
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+
+  h1 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* TABS */
+  .tab-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    padding: 6px 18px; border-radius: 20px; font-size: 12px;
+    border: 0.5px solid var(--border2); background: transparent;
+    cursor: pointer; color: var(--text2); transition: all 0.15s;
+    font-family: var(--font);
+  }
+  .tab.active { background: var(--surface); color: var(--text); font-weight: 500; border-color: var(--border2); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* STATE PILLS */
+  .state-pills { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .spill {
+    padding: 5px 16px; border-radius: 20px; font-size: 11px;
+    cursor: pointer; border: 1px solid transparent;
+    transition: all 0.15s; color: var(--text2); background: var(--surface2);
+    font-family: var(--font);
+  }
+  .spill.active { font-weight: 500; }
+  .spill.g.active { border-color: #1D9E75; color: #1D9E75; background: rgba(29,158,117,0.08); }
+  .spill.a.active { border-color: #BA7517; color: #BA7517; background: rgba(186,117,23,0.08); }
+  .spill.r.active { border-color: #E24B4A; color: #E24B4A; background: rgba(226,75,74,0.08); }
+  .spill.h.active { border-color: #7F77DD; color: #7F77DD; background: rgba(127,119,221,0.08); }
+  .spill.e.active { border-color: #378ADD; color: #378ADD; background: rgba(55,138,221,0.08); }
+
+  /* MAC SCREEN */
+  .mac-wrap { background: var(--surface2); border-radius: var(--radius-lg); padding: 20px; }
+  .mac-screen { background: #111113; border-radius: 14px; overflow: visible; border: 0.5px solid #2a2a2a; }
+  .mac-bar {
+    background: #111113; height: 32px; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 16px;
+    border-radius: 14px 14px 0 0; position: relative; overflow: visible;
+  }
+  .mac-desktop { height: 180px; background: #161820; border-radius: 0 0 14px 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .wp { position: absolute; inset: 0; background: radial-gradient(ellipse at 25% 60%, rgba(40,50,90,0.5) 0%, transparent 55%), radial-gradient(ellipse at 75% 30%, rgba(60,30,60,0.3) 0%, transparent 50%); }
+  .dock-row { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 5px 8px; }
+  .dock-item { width: 22px; height: 22px; border-radius: 5px; background: rgba(255,255,255,0.09); }
+  .menu-txt { font-size: 10px; color: #666; }
+  .menu-r { display: flex; gap: 10px; align-items: center; font-size: 10px; color: #666; }
+
+  /* NOTCH */
+  .notch-wrap { position: absolute; left: 50%; transform: translateX(-50%); top: 0; z-index: 10; }
+  .notch {
+    background: #000; border-radius: 0 0 15px 15px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; transition: width 0.45s cubic-bezier(0.4,0,0.2,1), height 0.45s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+  }
+  .notch-border-glow { position: absolute; inset: 0; border-radius: 0 0 15px 15px; pointer-events: none; transition: all 0.5s ease; z-index: 1; }
+  .notch-outer-glow { position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; border-radius: 50%; filter: blur(12px); transition: all 0.5s ease; pointer-events: none; z-index: 0; }
+  .notch-content { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+  .side-info { position: absolute; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 5px; z-index: 5; transition: opacity 0.3s; pointer-events: none; }
+  .side-info.left { right: calc(100% + 8px); }
+  .side-info.right { left: calc(100% + 8px); }
+  .side-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .side-t { font-size: 9px; color: #999; white-space: nowrap; font-family: -apple-system, sans-serif; }
+  .n-row { display: flex; align-items: center; gap: 7px; padding: 0 12px; }
+  .n-dot { border-radius: 50%; flex-shrink: 0; }
+  .n-col { display: flex; flex-direction: column; gap: 2px; }
+  .n-label { font-size: 9px; font-family: -apple-system, sans-serif; white-space: nowrap; }
+  .n-bar-track { height: 2px; width: 38px; border-radius: 2px; }
+  .n-bar-fill { height: 100%; border-radius: 2px; }
+
+  /* DESC */
+  .desc-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px; margin-top: 12px; }
+  .desc-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .desc-body { font-size: 12px; color: var(--text2); line-height: 1.55; }
+
+  /* KEYFRAMES */
+  @keyframes bg { 0%,100%{opacity:.55} 50%{opacity:1} }
+  @keyframes bg-fast { 0%,100%{opacity:.6} 50%{opacity:1} }
+  @keyframes bpulse { 0%,100%{transform:scale(.88)} 50%{transform:scale(1.15)} }
+  @keyframes bpulse-fast { 0%,100%{transform:scale(.9)} 50%{transform:scale(1.2)} }
+
+  /* SETTINGS */
+  .window {
+    border-radius: 14px; overflow: hidden;
+    border: 0.5px solid rgba(255,255,255,0.18);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+    display: flex; flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  .titlebar {
+    height: 38px; background: rgba(40,40,46,0.72);
+    backdrop-filter: blur(20px) saturate(1.8);
+    border-bottom: 0.5px solid rgba(255,255,255,0.09);
+    display: flex; align-items: center; padding: 0 14px; gap: 8px; flex-shrink: 0;
+  }
+  .traffic { width: 12px; height: 12px; border-radius: 50%; }
+  .titlebar-title { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 500; margin: 0 auto; letter-spacing: -0.01em; }
+  .win-body { display: flex; flex: 1; min-height: 400px; }
+  .sidebar {
+    width: 188px; flex-shrink: 0;
+    background: rgba(30,30,36,0.55);
+    backdrop-filter: blur(28px) saturate(1.6);
+    border-right: 0.5px solid rgba(255,255,255,0.07);
+    padding: 12px 8px; display: flex; flex-direction: column; gap: 2px;
+  }
+  .nav-section-label { font-size: 10px; color: rgba(255,255,255,0.28); font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; padding: 6px 10px 4px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; cursor: pointer; transition: background 0.12s; color: rgba(255,255,255,0.55); font-size: 13px; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); }
+  .nav-item.active { background: rgba(255,255,255,0.12); backdrop-filter: blur(12px); border: 0.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.92); font-weight: 500; }
+  .nav-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .main { flex: 1; background: rgba(24,24,28,0.62); backdrop-filter: blur(24px) saturate(1.5); padding: 24px 28px; overflow: hidden; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .page-title { font-size: 20px; font-weight: 600; color: rgba(255,255,255,0.92); margin-bottom: 20px; letter-spacing: -0.02em; }
+  .glass-section { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .glass-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 0.5px solid rgba(255,255,255,0.06); transition: background 0.1s; }
+  .glass-row:last-child { border-bottom: none; }
+  .glass-row:hover { background: rgba(255,255,255,0.03); }
+  .row-label { font-size: 13px; color: rgba(255,255,255,0.82); }
+  .row-sub { font-size: 11px; color: rgba(255,255,255,0.32); margin-top: 2px; }
+  .toggle { width: 36px; height: 20px; border-radius: 10px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; outline: none; }
+  .toggle.on { background: #1D9E75; }
+  .toggle.off { background: rgba(255,255,255,0.15); }
+  .toggle-thumb { position: absolute; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: white; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .toggle.on .toggle-thumb { left: 19px; }
+  .toggle.off .toggle-thumb { left: 3px; }
+  .glass-select { background: rgba(255,255,255,0.1); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 7px; color: rgba(255,255,255,0.8); font-size: 12px; padding: 5px 10px; outline: none; font-family: -apple-system, sans-serif; cursor: pointer; }
+  .glass-select option { background: #2a2a30; color: white; }
+  .glass-input { background: rgba(255,255,255,0.08); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 7px; color: rgba(255,255,255,0.85); font-size: 12px; padding: 5px 10px; width: 72px; text-align: center; font-family: -apple-system, sans-serif; outline: none; }
+  .section-header { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.07em; padding: 0 0 6px; margin-top: 4px; }
+  .day-pill { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.38); background: rgba(255,255,255,0.05); transition: all 0.12s; user-select: none; }
+  .day-pill.on { background: #1D9E75; border-color: #1D9E75; color: white; }
+  .slider-wrap { display: flex; align-items: center; gap: 10px; width: 180px; }
+  .slider-wrap input[type=range] { flex: 1; accent-color: #1D9E75; outline: none; border: none; cursor: pointer; }
+  .slider-val { font-size: 11px; color: rgba(255,255,255,0.45); min-width: 28px; text-align: right; }
+  .swatch { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+  .swatch.sel { border-color: white; box-shadow: 0 0 0 1px rgba(255,255,255,0.4); }
+  .privacy-banner { background: rgba(29,158,117,0.15); border: 0.5px solid rgba(29,158,117,0.3); border-radius: 10px; padding: 10px 14px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .badge-purple { background: rgba(127,119,221,0.25); color: #AFA9EC; }
+  .del-btn { font-size: 11px; padding: 5px 12px; border-radius: 7px; border: 0.5px solid rgba(226,75,74,0.5); color: #F09595; background: rgba(226,75,74,0.1); cursor: pointer; font-family: -apple-system, sans-serif; transition: background 0.12s; }
+  .del-btn:hover { background: rgba(226,75,74,0.18); }
+  .toolbar-strip { display: flex; gap: 1px; background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; width: fit-content; }
+  .toolbar-btn { padding: 5px 14px; font-size: 12px; color: rgba(255,255,255,0.5); cursor: pointer; background: transparent; border: none; font-family: -apple-system, sans-serif; transition: all 0.12s; }
+  .toolbar-btn.active { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.9); font-weight: 500; }
+  .time-row { display: flex; gap: 8px; align-items: center; }
+  .settings-bg { background: linear-gradient(135deg, #1c1c28 0%, #22202e 50%, #1a1e28 100%); border-radius: 18px; padding: 20px; }
+</style>
+
+<body>
+<h1>Notch Wellness Coach — UI Mockup</h1>
+
+<div class="tab-row">
+  <div class="tab active" onclick="switchMain('notch')">Notch states</div>
+  <div class="tab" onclick="switchMain('settings')">Settings</div>
+</div>
+
+<!-- NOTCH TAB -->
+<div id="main-notch" class="tab-content active">
+  <div class="state-pills">
+    <div class="spill g active" onclick="setS('green',this)">Flow</div>
+    <div class="spill a" onclick="setS('amber',this)">Heads-up</div>
+    <div class="spill r" onclick="setS('red',this)">Rest now</div>
+    <div class="spill h" onclick="setS('hover',this)">Hover</div>
+    <div class="spill e" onclick="setS('expanded',this)">Expanded</div>
+  </div>
+
+  <div class="mac-wrap">
+    <div class="mac-screen">
+      <div class="mac-bar">
+        <div style="display:flex;gap:14px;align-items:center;">
+          <span class="menu-txt" style="color:#ccc;font-size:11px;font-weight:600;">◆</span>
+          <span class="menu-txt">File</span><span class="menu-txt">Edit</span><span class="menu-txt">View</span>
+        </div>
+        <div class="notch-wrap">
+          <div style="position:relative;">
+            <div id="outer-glow" style="position:absolute;left:50%;transform:translateX(-50%);top:-2px;border-radius:0 0 20px 20px;filter:blur(14px);transition:all 0.5s ease;z-index:0;width:140px;height:50px;background:#1D9E75;opacity:0.5;animation:bg 3s ease-in-out infinite;"></div>
+            <div class="notch" id="the-notch" style="width:128px;height:32px;position:relative;z-index:2;">
+              <div class="notch-border-glow" id="border-glow" style="box-shadow:0 0 0 1.5px rgba(29,158,117,0.6), 0 0 10px 2px rgba(29,158,117,0.25);"></div>
+              <div class="side-info left" id="left-side">
+                <div class="side-dot" style="background:#1D9E75;" id="ldot"></div>
+                <span class="side-t" id="ltxt">92m focus</span>
+              </div>
+              <div class="notch-content" id="nc">
+                <div class="n-row">
+                  <div class="n-dot" id="ndot" style="width:7px;height:7px;background:#1D9E75;animation:bpulse 3s ease-in-out infinite;"></div>
+                  <div class="n-col">
+                    <span class="n-label" style="color:#1D9E75;">In flow</span>
+                    <div class="n-bar-track" style="background:rgba(29,158,117,0.2);">
+                      <div class="n-bar-fill" style="width:72%;background:#1D9E75;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="side-info right" id="right-side">
+                <span class="side-t" id="rtxt">9:41</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="menu-r"><span>wifi</span><span>⚡</span><span style="color:#aaa">●●●</span></div>
+      </div>
+      <div class="mac-desktop">
+        <div class="wp"></div>
+        <div class="dock-row">
+          <div class="dock-item"></div><div class="dock-item"></div><div class="dock-item"></div><div class="dock-item"></div><div class="dock-item"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="desc-card">
+    <div class="desc-title" id="dt">Flow state — green border glow</div>
+    <div class="desc-body" id="db">A crisp green border traces the notch edges with a soft outer bloom bleeding onto the menu bar. Left side shows focus streak, right side shows time.</div>
+  </div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div id="main-settings" class="tab-content">
+  <div class="settings-bg">
+    <div class="window">
+      <div class="titlebar">
+        <div class="traffic" style="background:#FF5F57;"></div>
+        <div class="traffic" style="background:#FEBC2E;"></div>
+        <div class="traffic" style="background:#28C840;"></div>
+        <div class="titlebar-title">Wellness Coach — Settings</div>
+      </div>
+      <div class="win-body">
+        <div class="sidebar">
+          <div class="nav-section-label">Preferences</div>
+          <div class="nav-item active" onclick="showPage('general',this)">
+            <div class="nav-icon" style="background:rgba(99,153,34,0.25);">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="#97C459" stroke-width="1.4"/><path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85" stroke="#97C459" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            General
+          </div>
+          <div class="nav-item" onclick="showPage('schedule',this)">
+            <div class="nav-icon" style="background:rgba(55,138,221,0.22);">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="#85B7EB" stroke-width="1.4"/><path d="M5 1.5v2M11 1.5v2M2 7h12" stroke="#85B7EB" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            Schedule
+          </div>
+          <div class="nav-item" onclick="showPage('breaks',this)">
+            <div class="nav-icon" style="background:rgba(239,159,39,0.2);">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#FAC775" stroke-width="1.4"/><path d="M8 5v3l2 1.5" stroke="#FAC775" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            Breaks
+          </div>
+          <div class="nav-item" onclick="showPage('notchpage',this)">
+            <div class="nav-icon" style="background:rgba(175,169,236,0.2);">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="4" y="1.5" width="8" height="5" rx="2.5" stroke="#AFA9EC" stroke-width="1.4"/><path d="M1.5 6.5h13" stroke="#AFA9EC" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            Notch
+          </div>
+          <div class="nav-item" onclick="showPage('ai',this)">
+            <div class="nav-icon" style="background:rgba(93,202,165,0.2);">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8.5C3 5.46 5.46 3 8.5 3S14 5.46 14 8.5" stroke="#5DCAA5" stroke-width="1.4" stroke-linecap="round"/><path d="M8.5 11.5v2M7 13.5h3" stroke="#5DCAA5" stroke-width="1.4" stroke-linecap="round"/><circle cx="6" cy="10" r="1" fill="#5DCAA5"/><circle cx="11" cy="10" r="1" fill="#5DCAA5"/></svg>
+            </div>
+            AI Coach
+            <span class="badge badge-purple" style="margin-left:auto;">v2</span>
+          </div>
+          <div class="nav-item" onclick="showPage('privacy',this)">
+            <div class="nav-icon" style="background:rgba(240,149,149,0.18);">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2.5 4.5v4c0 3 2.5 5 5.5 5.5 3-.5 5.5-2.5 5.5-5.5v-4L8 1.5z" stroke="#F09595" stroke-width="1.4"/></svg>
+            </div>
+            Privacy
+          </div>
+          <div style="margin-top:auto;padding:8px 10px 4px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.2);line-height:1.5;">Wellness Coach<br>Version 1.0.0</div>
+          </div>
+        </div>
+
+        <div class="main">
+          <!-- GENERAL -->
+          <div id="page-general" class="page active">
+            <div class="page-title">General</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Launch at login</div><div class="row-sub">Start automatically when you log in</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">Show menu bar icon</div><div class="row-sub">Fallback icon when notch is unavailable</div></div><div class="toggle off" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">Sound effects</div><div class="row-sub">Subtle chime on notch expand</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+            <div class="section-header">Notifications</div>
+            <div class="glass-section">
+              <div class="glass-row"><div class="row-label">Notification style</div><select class="glass-select"><option>Notch only</option><option>Notch + banner</option><option>Banner only</option></select></div>
+              <div class="glass-row"><div><div class="row-label">Wellness score in hover</div><div class="row-sub">Shows 0–100 score in stats strip</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Urgency threshold</div><div class="toolbar-strip"><div class="toolbar-btn active" onclick="setTb(this)">Low</div><div class="toolbar-btn" onclick="setTb(this)">Medium</div><div class="toolbar-btn" onclick="setTb(this)">High</div></div></div>
+            </div>
+          </div>
+
+          <!-- SCHEDULE -->
+          <div id="page-schedule" class="page">
+            <div class="page-title">Schedule</div>
+            <div class="section-header">Working hours</div>
+            <div class="glass-section">
+              <div class="glass-row"><div class="row-label">Active window</div><div class="time-row"><input class="glass-input" type="text" value="09:00"><span style="font-size:12px;color:rgba(255,255,255,0.3)">to</span><input class="glass-input" type="text" value="18:00"></div></div>
+              <div class="glass-row"><div class="row-label">Active days</div><div style="display:flex;gap:5px;"><div class="day-pill on">M</div><div class="day-pill on">T</div><div class="day-pill on">W</div><div class="day-pill on">T</div><div class="day-pill on">F</div><div class="day-pill">S</div><div class="day-pill">S</div></div></div>
+              <div class="glass-row"><div><div class="row-label">Evening wind-down</div><div class="row-sub">Gentle prompt to close work apps</div></div><input class="glass-input" type="text" value="20:30"></div>
+            </div>
+            <div class="section-header">Smart pausing</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Pause during meetings</div><div class="row-sub">Reads calendar via EventKit</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">Pause when idle</div><div class="row-sub">Detects away time and resets break timer</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">Weekend mode</div><div class="row-sub">Lighter nudges and longer intervals</div></div><div class="toggle off" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+          </div>
+
+          <!-- BREAKS -->
+          <div id="page-breaks" class="page">
+            <div class="page-title">Breaks</div>
+            <div class="section-header">Eye rest</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">20-20-20 rule</div><div class="row-sub">Every 20 mins, look 20ft away for 20s</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Interval</div><div class="slider-wrap"><input type="range" min="15" max="90" value="45" step="5" oninput="this.nextElementSibling.textContent=this.value+'m'"><span class="slider-val">45m</span></div></div>
+            </div>
+            <div class="section-header">Movement</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Stretch nudges</div><div class="row-sub">Posture and movement reminders</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Interval</div><div class="slider-wrap"><input type="range" min="30" max="120" value="60" step="10" oninput="this.nextElementSibling.textContent=this.value+'m'"><span class="slider-val">60m</span></div></div>
+              <div class="glass-row"><div><div class="row-label">Never interrupt flow</div><div class="row-sub">Waits for focus streaks > 30m to end</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+            <div class="section-header">Hydration</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Water reminders</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Interval</div><div class="slider-wrap"><input type="range" min="30" max="90" value="45" step="5" oninput="this.nextElementSibling.textContent=this.value+'m'"><span class="slider-val">45m</span></div></div>
+            </div>
+          </div>
+
+          <!-- NOTCH PAGE -->
+          <div id="page-notchpage" class="page">
+            <div class="page-title">Notch appearance</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Border glow</div><div class="row-sub">Colored outline follows state color</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Glow intensity</div><div class="slider-wrap"><input type="range" min="1" max="10" value="6" step="1" oninput="this.nextElementSibling.textContent=this.value"><span class="slider-val">6</span></div></div>
+              <div class="glass-row"><div><div class="row-label">Outer bloom</div><div class="row-sub">Diffused glow bleeding onto menu bar</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+            <div class="section-header">Content</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Side ambient info</div><div class="row-sub">Focus streak and time beside notch</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">Mini progress bar</div><div class="row-sub">Visual wellness fill inside notch</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Expand trigger</div><div class="toolbar-strip"><div class="toolbar-btn active" onclick="setTb(this)">Hover</div><div class="toolbar-btn" onclick="setTb(this)">Click</div><div class="toolbar-btn" onclick="setTb(this)">Both</div></div></div>
+            </div>
+            <div class="section-header">Custom accent</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Override state colors</div><div class="row-sub">Fix glow to one color regardless of state</div></div><div class="toggle off" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Color</div><div style="display:flex;gap:8px;"><div class="swatch sel" style="background:#1D9E75;" onclick="setSw(this)"></div><div class="swatch" style="background:#378ADD;" onclick="setSw(this)"></div><div class="swatch" style="background:#7F77DD;" onclick="setSw(this)"></div><div class="swatch" style="background:#EF9F27;" onclick="setSw(this)"></div><div class="swatch" style="background:#E24B4A;" onclick="setSw(this)"></div><div class="swatch" style="background:#888780;" onclick="setSw(this)"></div></div></div>
+            </div>
+          </div>
+
+          <!-- AI -->
+          <div id="page-ai" class="page">
+            <div class="page-title">AI Coach <span class="badge badge-purple">v2</span></div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Personalized messages</div><div class="row-sub">AI writes context-aware nudges for you</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Coaching tone</div><select class="glass-select"><option>Friendly</option><option>Direct</option><option>Minimal</option></select></div>
+              <div class="glass-row"><div><div class="row-label">Learn my rhythm</div><div class="row-sub">Adapts to your peak focus hours over time</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+            <div class="section-header">Behavioral signals</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Keystroke cadence</div><div class="row-sub">Speed only — content is never read</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">App switching rate</div><div class="row-sub">Context switch frequency as stress signal</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">HealthKit (HRV)</div><div class="row-sub">Apple Watch heart rate variability</div></div><div class="toggle off" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+          </div>
+
+          <!-- PRIVACY -->
+          <div id="page-privacy" class="page">
+            <div class="page-title">Privacy</div>
+            <div class="privacy-banner">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-top:1px;flex-shrink:0;"><path d="M8 1.5L2.5 4.5v4c0 3 2.5 5 5.5 5.5 3-.5 5.5-2.5 5.5-5.5v-4L8 1.5z" stroke="#5DCAA5" stroke-width="1.4"/><path d="M5.5 8l2 2 3-3" stroke="#5DCAA5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font-size:12px;color:#9FE1CB;line-height:1.5;">All data stays on your Mac. Nothing is ever uploaded, synced, or shared with third parties.</span>
+            </div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Local AI processing</div><div class="row-sub">CoreML / Ollama — no cloud API calls</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div><div class="row-label">Crash reports</div><div class="row-sub">Anonymous, no personal data included</div></div><div class="toggle off" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+            </div>
+            <div class="section-header">Data storage</div>
+            <div class="glass-section">
+              <div class="glass-row"><div><div class="row-label">Store wellness history</div><div class="row-sub">Required for weekly reports and trends</div></div><div class="toggle on" onclick="tog(this)"><div class="toggle-thumb"></div></div></div>
+              <div class="glass-row"><div class="row-label">Retention period</div><select class="glass-select"><option>30 days</option><option selected>90 days</option><option>1 year</option><option>Forever</option></select></div>
+              <div class="glass-row"><div><div class="row-label" style="color:#F09595;">Delete all wellness data</div><div class="row-sub">Permanently removes all stored history</div></div><button class="del-btn">Delete</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const stateData = {
+  green: { w:'128px',h:'32px', borderGlow:'0 0 0 1.5px rgba(29,158,117,0.7), 0 0 12px 3px rgba(29,158,117,0.2)', outerBg:'#1D9E75',outerAnim:'bg 3s ease-in-out infinite',outerOp:'0.5', dotColor:'#1D9E75',dotAnim:'bpulse 3s ease-in-out infinite', label:'In flow',labelColor:'#1D9E75', barBg:'rgba(29,158,117,0.2)',barFill:'#1D9E75',barW:'72%', ldotColor:'#1D9E75',ldotAnim:'bpulse 3s ease-in-out infinite', lt:'92m focus',rt:'9:41',lop:'1',rop:'1',html:null, dt:'Flow state — green border glow',db:'A crisp green border traces the notch edges with a soft outer bloom bleeding onto the menu bar. Left side shows focus streak, right side shows time.' },
+  amber: { w:'128px',h:'32px', borderGlow:'0 0 0 1.5px rgba(239,159,39,0.75), 0 0 14px 4px rgba(239,159,39,0.22)', outerBg:'#EF9F27',outerAnim:'bg-fast 2s ease-in-out infinite',outerOp:'0.55', dotColor:'#EF9F27',dotAnim:'bpulse 2s ease-in-out infinite', label:'Heads-up',labelColor:'#EF9F27', barBg:'rgba(239,159,39,0.2)',barFill:'#EF9F27',barW:'55%', ldotColor:'#EF9F27',ldotAnim:'bpulse 2s ease-in-out infinite', lt:'2h no break',rt:'3:42',lop:'1',rop:'1',html:null, dt:'Heads-up — amber border glow',db:'The amber glow breathes slightly faster — subtle urgency that catches peripheral vision. Left side flags time since last break.' },
+  red: { w:'128px',h:'32px', borderGlow:'0 0 0 1.5px rgba(226,75,74,0.8), 0 0 16px 5px rgba(226,75,74,0.25)', outerBg:'#E24B4A',outerAnim:'bg-fast 1.4s ease-in-out infinite',outerOp:'0.65', dotColor:'#E24B4A',dotAnim:'bpulse-fast 1.4s ease-in-out infinite', label:'Rest needed',labelColor:'#E24B4A', barBg:'rgba(226,75,74,0.2)',barFill:'#E24B4A',barW:'92%', ldotColor:'#E24B4A',ldotAnim:'bpulse-fast 1.4s ease-in-out infinite', lt:'3h 40m screen',rt:'5:18',lop:'1',rop:'1',html:null, dt:'Rest now — red border glow',db:'Widest, most intense glow. Bar nearly full. Dot breathes fastest. Urgency communicated through visual rhythm alone.' },
+  hover: { w:'280px',h:'32px', borderGlow:'0 0 0 1.5px rgba(127,119,221,0.65), 0 0 12px 3px rgba(127,119,221,0.2)', outerBg:'#7F77DD',outerAnim:'bg 2.5s ease-in-out infinite',outerOp:'0.45',
+    html:`<div style="display:flex;align-items:center;width:100%;padding:0 14px;gap:0;"><div style="display:flex;flex-direction:column;align-items:center;flex:1;"><span style="font-size:13px;font-weight:600;color:#1D9E75;font-family:-apple-system,sans-serif;line-height:1;">92m</span><span style="font-size:8px;color:#666;font-family:-apple-system,sans-serif;margin-top:2px;">focus</span></div><div style="width:0.5px;height:24px;background:#2a2a2a;"></div><div style="display:flex;flex-direction:column;align-items:center;flex:1;"><span style="font-size:13px;font-weight:600;color:#EF9F27;font-family:-apple-system,sans-serif;line-height:1;">2h14m</span><span style="font-size:8px;color:#666;font-family:-apple-system,sans-serif;margin-top:2px;">no break</span></div><div style="width:0.5px;height:24px;background:#2a2a2a;"></div><div style="display:flex;flex-direction:column;align-items:center;flex:1;"><span style="font-size:13px;font-weight:600;color:#aaa;font-family:-apple-system,sans-serif;line-height:1;">5.2h</span><span style="font-size:8px;color:#666;font-family:-apple-system,sans-serif;margin-top:2px;">today</span></div><div style="width:0.5px;height:24px;background:#2a2a2a;"></div><div style="display:flex;flex-direction:column;align-items:center;flex:1;"><span style="font-size:13px;font-weight:600;color:#7F77DD;font-family:-apple-system,sans-serif;line-height:1;">72</span><span style="font-size:8px;color:#666;font-family:-apple-system,sans-serif;margin-top:2px;">wellness</span></div></div>`,
+    dt:'Hover — stats strip with purple glow',db:'On hover the notch expands horizontally showing four key numbers. Purple glow signals an interactive/hovered state.' },
+  expanded: { w:'340px',h:'84px', borderGlow:'0 0 0 1.5px rgba(55,138,221,0.65), 0 0 14px 4px rgba(55,138,221,0.2)', outerBg:'#378ADD',outerAnim:'bg 3s ease-in-out infinite',outerOp:'0.4',
+    html:`<div style="display:flex;flex-direction:column;width:100%;padding:8px 14px 7px;gap:5px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:6px;height:6px;border-radius:50%;background:#EF9F27;animation:bpulse-fast 1.8s ease-in-out infinite;flex-shrink:0;"></div><span style="font-size:9px;font-weight:600;color:#EF9F27;font-family:-apple-system,sans-serif;letter-spacing:0.05em;">HEADS-UP · 3:42 PM</span><span style="margin-left:auto;font-size:9px;color:#444;font-family:-apple-system,sans-serif;cursor:pointer;">✕</span></div><div style="font-size:11px;color:#ddd;font-family:-apple-system,sans-serif;line-height:1.45;">Typing speed dropped 38% in 20 mins — classic afternoon dip.</div><div style="display:flex;gap:7px;margin-top:1px;"><span style="font-size:9px;color:#1D9E75;font-family:-apple-system,sans-serif;cursor:pointer;background:rgba(29,158,117,0.14);padding:3px 9px;border-radius:10px;">Take 5-min break</span><span style="font-size:9px;color:#666;font-family:-apple-system,sans-serif;cursor:pointer;padding:3px 9px;border-radius:10px;border:0.5px solid #333;">Snooze 15m</span></div></div>`,
+    dt:'Expanded — AI message with blue glow',db:'Clicking opens a full message panel dropping from the notch. Blue glow signals open/active state. Severity badge, insight, and one-tap actions — no window opened.' }
+};
+
+function switchMain(id) {
+  ['notch','settings'].forEach(k => {
+    document.getElementById('main-'+k).classList.toggle('active', k===id);
+  });
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['notch','settings'][i]===id);
+  });
+}
+
+function setS(key, el) {
+  document.querySelectorAll('.spill').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  const s = stateData[key];
+  const notch = document.getElementById('the-notch');
+  const bg = document.getElementById('border-glow');
+  const og = document.getElementById('outer-glow');
+  const nc = document.getElementById('nc');
+  const ls = document.getElementById('left-side');
+  const rs = document.getElementById('right-side');
+  notch.style.width = s.w; notch.style.height = s.h;
+  bg.style.boxShadow = s.borderGlow;
+  og.style.background = s.outerBg; og.style.animation = s.outerAnim; og.style.opacity = s.outerOp; og.style.width = s.w;
+  if (s.html) {
+    nc.innerHTML = s.html; ls.style.opacity = '0'; rs.style.opacity = '0';
+  } else {
+    ls.style.opacity = s.lop; rs.style.opacity = s.rop;
+    document.getElementById('ldot').style.background = s.ldotColor;
+    document.getElementById('ldot').style.animation = s.ldotAnim;
+    document.getElementById('ltxt').textContent = s.lt;
+    document.getElementById('rtxt').textContent = s.rt;
+    nc.innerHTML = `<div class="n-row"><div class="n-dot" style="width:7px;height:7px;background:${s.dotColor};animation:${s.dotAnim};"></div><div class="n-col"><span class="n-label" style="color:${s.labelColor};font-size:9px;font-family:-apple-system,sans-serif;">${s.label}</span><div class="n-bar-track" style="background:${s.barBg};"><div class="n-bar-fill" style="width:${s.barW};background:${s.barFill};"></div></div></div></div>`;
+  }
+  document.getElementById('dt').textContent = s.dt;
+  document.getElementById('db').textContent = s.db;
+}
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+function tog(el) { el.classList.toggle('on'); el.classList.toggle('off'); }
+function setSw(el) { document.querySelectorAll('.swatch').forEach(s => s.classList.remove('sel')); el.classList.add('sel'); }
+function setTb(el) { const strip = el.closest('.toolbar-strip'); strip.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+document.querySelectorAll('.day-pill').forEach(dp => dp.addEventListener('click', () => dp.classList.toggle('on')));
+</script>
+</body>
+</html>

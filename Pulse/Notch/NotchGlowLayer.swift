@@ -1,69 +1,90 @@
-import AppKit
-import QuartzCore
+import SwiftUI
 
-final class NotchGlowLayer {
-    let borderGlow = CALayer()
-    let outerBloom = CALayer()
+/// SwiftUI glow that traces the notch pill in three layered passes:
+///  * `outerBloom` — wide, heavily blurred copy of the pill shape, bleeds onto the
+///    menu bar. Breathes in opacity at `pulseDuration`.
+///  * `halo` — soft wider stroke, blurred; gives the pill a colored atmosphere.
+///  * `rim` — crisp 1.5pt stroke flush with the pill edge.
+///
+/// Uses `NotchShape` so it follows the same flat-top / rounded-bottom silhouette
+/// as the pill itself on notched Macs, and fully rounds on non-notched Macs when
+/// `topCornerRadius == bottomCornerRadius`.
+struct NotchGlowBackground: View {
+    let color: Color
+    let pulseDuration: Double
+    let pillSize: CGSize
+    let topCornerRadius: CGFloat
+    let bottomCornerRadius: CGFloat
 
-    private var currentColor: NSColor = .pulseGreen
+    @State private var breathing = false
 
-    init() {
-        borderGlow.shadowRadius = 6
-        borderGlow.shadowOpacity = 0.7
-        borderGlow.shadowOffset = .zero
-        borderGlow.masksToBounds = false
-        borderGlow.cornerRadius = 16
-        borderGlow.backgroundColor = NSColor.black.withAlphaComponent(0.001).cgColor
-        borderGlow.shadowColor = currentColor.cgColor
-
-        outerBloom.shadowRadius = 14
-        outerBloom.shadowOpacity = 0.45
-        outerBloom.shadowOffset = CGSize(width: 0, height: -4)
-        outerBloom.masksToBounds = false
-        outerBloom.cornerRadius = 16
-        outerBloom.backgroundColor = NSColor.black.withAlphaComponent(0.001).cgColor
-        outerBloom.shadowColor = currentColor.cgColor
-    }
-
-    func attach(to parent: CALayer, frame: CGRect) {
-        borderGlow.frame = frame
-        outerBloom.frame = frame
-        parent.addSublayer(outerBloom)
-        parent.addSublayer(borderGlow)
-        startBreathingPulse(duration: 3.0)
-    }
-
-    func updateFrame(_ frame: CGRect) {
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        borderGlow.frame = frame
-        outerBloom.frame = frame
-        CATransaction.commit()
-    }
-
-    func setState(color: NSColor, pulseDuration: Double, animated: Bool = true) {
-        if animated {
-            let colorAnim = CABasicAnimation(keyPath: "shadowColor")
-            colorAnim.fromValue = currentColor.cgColor
-            colorAnim.toValue = color.cgColor
-            colorAnim.duration = 0.5
-            borderGlow.add(colorAnim, forKey: "borderColor")
-            outerBloom.add(colorAnim, forKey: "bloomColor")
+    var body: some View {
+        ZStack {
+            outerBloom
+            halo
+            rim
         }
-        borderGlow.shadowColor = color.cgColor
-        outerBloom.shadowColor = color.cgColor
-        currentColor = color
-        startBreathingPulse(duration: pulseDuration)
+        // Pin this view to the pill's bounds so the rim/halo layers align exactly
+        // with the pill background. The bloom intentionally oversizes itself inside
+        // and overflows this frame (SwiftUI doesn't clip by default).
+        //
+        // Color/size transitions inherit the parent's spring so the glow morphs in
+        // lockstep with the pill — no explicit `.animation` here.
+        .frame(width: pillSize.width, height: pillSize.height)
+        .onAppear { startBreathing() }
+        .onChange(of: pulseDuration) { _, _ in restartBreathing() }
     }
 
-    private func startBreathingPulse(duration: Double) {
-        outerBloom.removeAnimation(forKey: "bloomPulse")
-        let pulse = CABasicAnimation(keyPath: "shadowOpacity")
-        pulse.fromValue = 0.3
-        pulse.toValue = 0.6
-        pulse.duration = duration
-        pulse.autoreverses = true
-        pulse.repeatCount = .infinity
-        outerBloom.add(pulse, forKey: "bloomPulse")
+    private var outerBloom: some View {
+        NotchShape(
+            topCornerRadius: topCornerRadius,
+            bottomCornerRadius: bottomCornerRadius + 8
+        )
+        .fill(color)
+        .frame(width: pillSize.width + 18, height: pillSize.height + 14)
+        .blur(radius: 14)
+        .opacity(breathing ? 0.30 : 0.62)
+        .offset(y: -2)
+        .allowsHitTesting(false)
+    }
+
+    private var halo: some View {
+        NotchShape(
+            topCornerRadius: topCornerRadius,
+            bottomCornerRadius: bottomCornerRadius
+        )
+        .stroke(color, lineWidth: 4)
+        .frame(width: pillSize.width, height: pillSize.height)
+        .blur(radius: 5)
+        .opacity(0.35)
+        .allowsHitTesting(false)
+    }
+
+    private var rim: some View {
+        NotchShape(
+            topCornerRadius: topCornerRadius,
+            bottomCornerRadius: bottomCornerRadius
+        )
+        .stroke(color.opacity(0.8), lineWidth: 1.5)
+        .frame(width: pillSize.width, height: pillSize.height)
+        .blur(radius: 0.4)
+        .allowsHitTesting(false)
+    }
+
+    private func startBreathing() {
+        withAnimation(.easeInOut(duration: pulseDuration).repeatForever(autoreverses: true)) {
+            breathing = true
+        }
+    }
+
+    /// Switch breathing cadence without a visible snap: fade to the low opacity
+    /// under a short ease, then hand off to the new `.repeatForever` cycle.
+    private func restartBreathing() {
+        withAnimation(.easeInOut(duration: 0.3)) { breathing = false }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+            withAnimation(.easeInOut(duration: pulseDuration).repeatForever(autoreverses: true)) {
+                breathing = true
+            }
+        }
     }
 }
